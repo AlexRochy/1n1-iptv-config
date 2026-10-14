@@ -1,1 +1,25 @@
-ewogICJtYWluIjogewogICAgInVybCI6ICJodHRwczovL2lwdHYtb3JnLmdpdGh1Yi5pby9pcHR2L2xhbmd1YWdlcy9iZW4ubTN1IiwKICAgICJlbmFibGVkIjogdHJ1ZSwKICAgICJuYW1lIjogIkJlbmdsYSBNYWluICgxMDEpIgogIH0sCiAgImJhY2t1cDEiOiB7CiAgICAidXJsIjogIiIsCiAgICAiZW5hYmxlZCI6IGZhbHNlLAogICAgIm5hbWUiOiAiQmFja3VwIDEiCiAgfSwKICAiYmFja3VwMiI6IHsKICAgICJ1cmwiOiAiIiwKICAgICJlbmFibGVkIjogZmFsc2UsCiAgICAibmFtZSI6ICJCYWNrdXAgMiIKICB9LAogICJleHRyYSI6IFtdLAogICJ1cGRhdGVkX2F0IjogIjIwMjYtMTAtMTQiCn0=
+{
+  "main": {
+    "url": "https://iptv-org.github.io/iptv/languages/ben.m3u",
+    "enabled": true,
+    "name": "Bangla Main (101)"
+  },
+  "backup1": {
+    "url": "",
+    "enabled": false,
+    "name": "Backup 1"
+  },
+  "backup2": {
+    "url": "",
+    "enabled": false,
+    "name": "Backup 2"
+  },
+  "extra": [],
+  "ads": {
+    "enabled": false,
+    "banner_code": "",
+    "interval_minutes": 10,
+    "duration_seconds": 15
+  },
+  "updated_at": "2026-10-14"
+}
