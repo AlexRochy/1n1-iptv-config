@@ -19,7 +19,7 @@
   "ads": {
     "enabled": true,
     "banner_code": "<script>   atOptions = {     'key' : 'f21d5c927242f1d77ddb9d8ba6a45f7e',     'format' : 'iframe',     'height' : 90,     'width' : 728,     'params' : {}   }; </script> <script src=\"https://www.highrevenueformat.com/f21d5c927242f1d77ddb9d8ba6a45f7e/invoke.js\"></script>",
-    "interval_minutes": 2,
+    "interval_minutes": 5,
     "duration_seconds": 15,
     "popup_enabled": false,
     "popup_code": "",
@@ -27,7 +27,7 @@
     "popup_duration_seconds": 10,
     "sidebar_enabled": true,
     "sidebar_code": "<script>   atOptions = {     'key' : '56023ab15a360e0d57e5e074097442d2',     'format' : 'iframe',     'height' : 600,     'width' : 160,     'params' : {}   }; </script> <script src=\"https://www.highrevenueformat.com/56023ab15a360e0d57e5e074097442d2/invoke.js\"></script>",
-    "sidebar_interval_minutes": 2,
+    "sidebar_interval_minutes": 5,
     "sidebar_duration_seconds": 15,
     "combo_enabled": true,
     "combo_interval_minutes": 1,
