@@ -5,8 +5,8 @@
     "name": "Main"
   },
   "backup1": {
-    "url": "",
-    "enabled": false,
+    "url": "https://iptv-org.github.io/iptv/countries/in.m3u",
+    "enabled": true,
     "name": "Backup 1"
   },
   "backup2": {
