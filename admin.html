@@ -146,6 +146,26 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     </div>
   </div>
 
+  <div class="card">
+    <h2>🔄 App Update Management</h2>
+    <label>Version Code (number, barate hobe)</label>
+    <input type="text" id="verCode" value="11" placeholder="12">
+    <label>Version Name</label>
+    <input type="text" id="verName" value="2.0" placeholder="2.1">
+    <label>APK Download URL (Google Drive direct link)</label>
+    <input type="text" id="apkUrl" placeholder="https://drive.google.com/uc?export=download&id=...">
+    <label>Update Message</label>
+    <input type="text" id="verMsg" value="New version available!" placeholder="Ki notun!">
+    <div class="row">
+      <span class="status off" id="forceStatus">● Optional</span>
+      <div class="toggle" id="forceToggle" onclick="togglePl('force')"></div>
+      <span style="font-size:13px;color:#aaa">Force update (skip kora jabe na)</span>
+    </div>
+    <button class="btn btn-save" onclick="generateVersion()" style="background:#f59e0b;margin-top:10px">📦 Generate version.json</button>
+    <button class="btn btn-save" onclick="copyVersion()" style="background:#8b5cf6;margin-left:10px">📋 Copy version.json</button>
+    <div class="output" id="versionOutput" style="display:none;margin-top:10px"></div>
+  </div>
+
   <button class="btn btn-save" onclick="generate()">💾 Generate Config</button>
   <button class="btn btn-save" onclick="copyJSON()" style="background:#8b5cf6;margin-left:10px">📋 Copy JSON</button>
   <div class="card" style="margin-top:15px">
@@ -167,7 +187,7 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
 </div>
 
 <script>
-const state = { main: true, b1: false, b2: false, ex: false, ad: false };
+const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false };
 function checkPw() {
   if (document.getElementById('pwInput').value === 'shahin123') {
     document.getElementById('pwScreen').style.display = 'none';
@@ -220,6 +240,35 @@ function fallbackCopy(text) {
     alert('❌ Copy hoyni — manually select kore copy koro');
   }
   document.body.removeChild(ta);
+}
+function generateVersion() {
+  const cfg = {
+    versionCode: parseInt(document.getElementById('verCode').value) || 11,
+    versionName: document.getElementById('verName').value || "2.0",
+    apkUrl: document.getElementById('apkUrl').value,
+    forceUpdate: state.force || false,
+    message: document.getElementById('verMsg').value || "New version available!"
+  };
+  const out = document.getElementById('versionOutput');
+  out.style.display = 'block';
+  out.textContent = JSON.stringify(cfg, null, 2);
+  out.scrollIntoView({ behavior: 'smooth' });
+  return cfg;
+}
+function copyVersion() {
+  const out = document.getElementById('versionOutput');
+  const text = out.textContent || out.innerText;
+  if (!text || !text.trim()) {
+    alert('Age "Generate version.json" chap dao!');
+    return;
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('✅ version.json copy hoise! GitHub-e version.json-e paste koro!');
+    }).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
 }
 function buildConfig() {
   const cfg = {
