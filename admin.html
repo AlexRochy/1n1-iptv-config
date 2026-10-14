@@ -38,13 +38,22 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <p style="color:#94a3b8;margin-bottom:5px">Admin Panel</p>
     <input type="text" id="pwInput" placeholder="Password" style="width:200px">
     <br>
+    <label style="display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0;color:#94a3b8;font-size:14px;cursor:pointer">
+      <input type="checkbox" id="rememberMe" style="width:18px;height:18px;accent-color:#f59e0b">
+      30 din mone rakho
+    </label>
     <button class="btn btn-save" onclick="checkPw()" style="width:200px">Login</button>
   </div>
 </div>
 
 <div class="container" id="mainUI" style="display:none">
-  <h1>📺 1N1 IPTV</h1>
-  <p class="subtitle">Admin Panel — Playlist Control</p>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <h1>📺 1N1 IPTV</h1>
+      <p class="subtitle">Admin Panel — Playlist Control</p>
+    </div>
+    <button onclick="logout()" style="background:#ef4444;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px">🚪 Logout</button>
+  </div>
 
   <div class="card">
     <h2>🔵 Main Playlist</h2>
@@ -209,9 +218,33 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
 const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false, combo: false };
 function checkPw() {
   if (document.getElementById('pwInput').value === 'shahin123') {
+    // Remember me for 30 days
+    if (document.getElementById('rememberMe').checked) {
+      const expiry = Date.now() + (30 * 24 * 60 * 60 * 1000);
+      localStorage.setItem('1n1_auth', JSON.stringify({ ok: true, exp: expiry }));
+    }
     document.getElementById('pwScreen').style.display = 'none';
     document.getElementById('mainUI').style.display = 'block';
   } else { alert('❌ Wrong password!'); }
+}
+// Auto-login if remembered session is valid
+(function() {
+  try {
+    const saved = localStorage.getItem('1n1_auth');
+    if (saved) {
+      const s = JSON.parse(saved);
+      if (s.ok && s.exp > Date.now()) {
+        document.getElementById('pwScreen').style.display = 'none';
+        document.getElementById('mainUI').style.display = 'block';
+      } else {
+        localStorage.removeItem('1n1_auth');
+      }
+    }
+  } catch (e) {}
+})();
+function logout() {
+  localStorage.removeItem('1n1_auth');
+  location.reload();
 }
 function togglePl(k) {
   state[k] = !state[k];
