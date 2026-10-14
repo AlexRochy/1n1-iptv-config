@@ -19,15 +19,18 @@
   "ads": {
     "enabled": true,
     "banner_code": "<script>   atOptions = {     'key' : 'f21d5c927242f1d77ddb9d8ba6a45f7e',     'format' : 'iframe',     'height' : 90,     'width' : 728,     'params' : {}   }; </script> <script src=\"https://www.highrevenueformat.com/f21d5c927242f1d77ddb9d8ba6a45f7e/invoke.js\"></script>",
-    "interval_minutes": 1,
-    "duration_seconds": 10,
-    "popup_enabled": true,
-    "popup_code": "<script>   atOptions = {     'key' : '22a7422a0c1abc7638ea20b17b40df5e',     'format' : 'iframe',     'height' : 250,     'width' : 300,     'params' : {}   }; </script> <script src=\"https://www.highrevenueformat.com/22a7422a0c1abc7638ea20b17b40df5e/invoke.js\"></script>",
-    "popup_interval_minutes": 1,
+    "interval_minutes": 2,
+    "duration_seconds": 15,
+    "popup_enabled": false,
+    "popup_code": "",
+    "popup_interval_minutes": 5,
     "popup_duration_seconds": 10,
     "sidebar_enabled": true,
     "sidebar_code": "<script>   atOptions = {     'key' : '56023ab15a360e0d57e5e074097442d2',     'format' : 'iframe',     'height' : 600,     'width' : 160,     'params' : {}   }; </script> <script src=\"https://www.highrevenueformat.com/56023ab15a360e0d57e5e074097442d2/invoke.js\"></script>",
-    "sidebar_interval_minutes": 1,
-    "sidebar_duration_seconds": 10
+    "sidebar_interval_minutes": 2,
+    "sidebar_duration_seconds": 15,
+    "combo_enabled": true,
+    "combo_interval_minutes": 1,
+    "combo_duration_seconds": 15
   }
 }
