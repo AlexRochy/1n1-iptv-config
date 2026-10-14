@@ -87,7 +87,7 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
   </div>
 
   <div class="card">
-    <h2>📢 Adsterra Ads</h2>
+    <h2>📢 Banner Ad (728x90) — Niche</h2>
     <label>Banner Ad Code (JavaScript/HTML)</label>
     <input type="text" id="adCode" placeholder="<script>...</script> paste koro">
     <div style="display:flex;gap:10px;margin-bottom:10px">
@@ -103,6 +103,46 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <div class="row">
       <span class="status off" id="adStatus">● OFF</span>
       <div class="toggle" id="adToggle" onclick="togglePl('ad')"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💬 Popup Ad (300x250) — Dan-nicher kona</h2>
+    <label>Popup Ad Code (JavaScript/HTML)</label>
+    <input type="text" id="popupCode" placeholder="<script>...</script> paste koro">
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <div style="flex:1">
+        <label>Kotokkhon por por (minit)</label>
+        <input type="text" id="popupInterval" value="5">
+      </div>
+      <div style="flex:1">
+        <label>Kotokkhon dekhabe (sec)</label>
+        <input type="text" id="popupDuration" value="10">
+      </div>
+    </div>
+    <div class="row">
+      <span class="status off" id="popupStatus">● OFF</span>
+      <div class="toggle" id="popupToggle" onclick="togglePl('popup')"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📐 Sidebar Ad (160x600) — Dan pash</h2>
+    <label>Sidebar Ad Code (JavaScript/HTML)</label>
+    <input type="text" id="sidebarCode" placeholder="<script>...</script> paste koro">
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <div style="flex:1">
+        <label>Kotokkhon por por (minit)</label>
+        <input type="text" id="sidebarInterval" value="30">
+      </div>
+      <div style="flex:1">
+        <label>Kotokkhon dekhabe (sec)</label>
+        <input type="text" id="sidebarDuration" value="60">
+      </div>
+    </div>
+    <div class="row">
+      <span class="status off" id="sidebarStatus">● OFF</span>
+      <div class="toggle" id="sidebarToggle" onclick="togglePl('sidebar')"></div>
     </div>
   </div>
 
@@ -191,12 +231,20 @@ function buildConfig() {
   };
   const exUrl = document.getElementById('extraUrl').value;
   if (exUrl && state.ex) cfg.extra.push({ url: exUrl, enabled: true, name: "Extra" });
-  // Ads config
+  // Ads config — banner, popup, sidebar
   cfg.ads = {
     enabled: state.ad,
     banner_code: document.getElementById('adCode').value,
     interval_minutes: parseInt(document.getElementById('adInterval').value) || 10,
-    duration_seconds: parseInt(document.getElementById('adDuration').value) || 15
+    duration_seconds: parseInt(document.getElementById('adDuration').value) || 15,
+    popup_enabled: state.popup || false,
+    popup_code: document.getElementById('popupCode').value,
+    popup_interval_minutes: parseInt(document.getElementById('popupInterval').value) || 5,
+    popup_duration_seconds: parseInt(document.getElementById('popupDuration').value) || 10,
+    sidebar_enabled: state.sidebar || false,
+    sidebar_code: document.getElementById('sidebarCode').value,
+    sidebar_interval_minutes: parseInt(document.getElementById('sidebarInterval').value) || 30,
+    sidebar_duration_seconds: parseInt(document.getElementById('sidebarDuration').value) || 60
   };
   return cfg;
 }
