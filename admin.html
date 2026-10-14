@@ -107,6 +107,7 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
   </div>
 
   <button class="btn btn-save" onclick="generate()">💾 Generate Config</button>
+  <button class="btn btn-save" onclick="copyJSON()" style="background:#8b5cf6;margin-left:10px">📋 Copy JSON</button>
   <div class="card" style="margin-top:15px">
     <h2>🚀 Direct GitHub Save</h2>
     <label>GitHub Token (Settings → Developer settings → Personal access tokens)</label>
@@ -148,6 +149,37 @@ function generate() {
   out.textContent = JSON.stringify(cfg, null, 2);
   out.scrollIntoView({ behavior: 'smooth' });
   return cfg;
+}
+function copyJSON() {
+  const out = document.getElementById('output');
+  const text = out.textContent || out.innerText;
+  if (!text || !text.trim()) {
+    alert('Age "Generate Config" chap dao!');
+    return;
+  }
+  // Try modern Clipboard API first
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('✅ JSON copy hoise! GitHub-e paste koro!');
+    }).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    alert('✅ JSON copy hoise! GitHub-e paste koro!');
+  } catch (e) {
+    alert('❌ Copy hoyni — manually select kore copy koro');
+  }
+  document.body.removeChild(ta);
 }
 function buildConfig() {
   const cfg = {
