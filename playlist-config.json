@@ -1,12 +1,12 @@
 {
   "main": {
     "url": "https://iptv-org.github.io/iptv/languages/ben.m3u",
-    "enabled": true,
+    "enabled": false,
     "name": "Main"
   },
   "backup1": {
-    "url": "",
-    "enabled": false,
+    "url": "https://iptv-org.github.io/iptv/countries/in.m3u",
+    "enabled": true,
     "name": "Backup 1"
   },
   "backup2": {
@@ -17,9 +17,9 @@
   "extra": [],
   "updated_at": "2026-10-14",
   "ads": {
-    "enabled": false,
-    "banner_code": "",
-    "interval_minutes": 10,
-    "duration_seconds": 15
+    "enabled": true,
+    "banner_code": "<script>   atOptions = {     'key' : '8637b0d7230a4841860911b5cd73f85e',     'format' : 'iframe',     'height' : 90,     'width' : 728,     'params' : {}   }; </script> <script src=\"https://www.highrevenueformat.com/8637b0d7230a4841860911b5cd73f85e/invoke.js\"></script>",
+    "interval_minutes": 1,
+    "duration_seconds": 1
   }
 }
