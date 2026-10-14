@@ -18,7 +18,7 @@
   "updated_at": "2026-10-14",
   "ads": {
     "enabled": true,
-    "banner_code": "<script>   atOptions = {     'key' : '8637b0d7230a4841860911b5cd73f85e',     'format' : 'iframe',     'height' : 90,     'width' : 728,     'params' : {}   }; </script> <script src=\"https://www.highrevenueformat.com/8637b0d7230a4841860911b5cd73f85e/invoke.js\"></script>",
+    "banner_code": "<script>   atOptions = {     'key' : 'f21d5c927242f1d77ddb9d8ba6a45f7e',     'format' : 'iframe',     'height' : 90,     'width' : 728,     'params' : {}   }; </script> <script src=\"https://www.highrevenueformat.com/f21d5c927242f1d77ddb9d8ba6a45f7e/invoke.js\"></script>",
     "interval_minutes": 1,
     "duration_seconds": 15
   }
