@@ -1,13 +1,11 @@
-
-
 {
   "main": {
     "url": "https://iptv-org.github.io/iptv/languages/ben.m3u",
-    "enabled": false,
+    "enabled": true,
     "name": "Main"
   },
   "backup1": {
-    "url": "https://iptv-org.github.io/iptv/countries/in.m3u",
+    "url": "",
     "enabled": false,
     "name": "Backup 1"
   },
