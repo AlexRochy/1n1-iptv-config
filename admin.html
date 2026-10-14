@@ -147,6 +147,25 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
   </div>
 
   <div class="card">
+    <h2>🔥 Combo Ad Mode (Banner + Sidebar ekshathe!)</h2>
+    <p style="font-size:13px;color:#aaa;margin-bottom:10px">Jokhon ON, banner + sidebar ekshathe show hobe! Video 70% + dan pashe ad + niche banner!</p>
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <div style="flex:1">
+        <label>Kotokkhon por por (minit)</label>
+        <input type="text" id="comboInterval" value="30">
+      </div>
+      <div style="flex:1">
+        <label>Kotokkhon dekhabe (sec)</label>
+        <input type="text" id="comboDuration" value="60">
+      </div>
+    </div>
+    <div class="row">
+      <span class="status off" id="comboStatus">● OFF</span>
+      <div class="toggle" id="comboToggle" onclick="togglePl('combo')"></div>
+    </div>
+  </div>
+
+  <div class="card">
     <h2>🔄 App Update Management</h2>
     <label>Version Code (number, barate hobe)</label>
     <input type="text" id="verCode" value="11" placeholder="12">
@@ -187,7 +206,7 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
 </div>
 
 <script>
-const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false };
+const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false, combo: false };
 function checkPw() {
   if (document.getElementById('pwInput').value === 'shahin123') {
     document.getElementById('pwScreen').style.display = 'none';
@@ -293,7 +312,10 @@ function buildConfig() {
     sidebar_enabled: state.sidebar || false,
     sidebar_code: document.getElementById('sidebarCode').value,
     sidebar_interval_minutes: parseInt(document.getElementById('sidebarInterval').value) || 30,
-    sidebar_duration_seconds: parseInt(document.getElementById('sidebarDuration').value) || 60
+    sidebar_duration_seconds: parseInt(document.getElementById('sidebarDuration').value) || 60,
+    combo_enabled: state.combo || false,
+    combo_interval_minutes: parseInt(document.getElementById('comboInterval').value) || 30,
+    combo_duration_seconds: parseInt(document.getElementById('comboDuration').value) || 60
   };
   return cfg;
 }
