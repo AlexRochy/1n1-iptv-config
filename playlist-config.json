@@ -1,8 +1,8 @@
 {
   "main": {
     "url": "https://iptv-org.github.io/iptv/languages/ben.m3u",
-    "enabled": true,
-    "name": "Bangla Main (101)"
+    "enabled": false,
+    "name": "Main"
   },
   "backup1": {
     "url": "",
@@ -15,11 +15,11 @@
     "name": "Backup 2"
   },
   "extra": [],
+  "updated_at": "2026-10-14",
   "ads": {
     "enabled": false,
     "banner_code": "",
     "interval_minutes": 10,
     "duration_seconds": 15
-  },
-  "updated_at": "2026-10-14"
+  }
 }
