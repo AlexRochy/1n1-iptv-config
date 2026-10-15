@@ -301,6 +301,7 @@ function checkPw() {
     }
     document.getElementById('pwScreen').style.display = 'none';
     document.getElementById('mainUI').style.display = 'block';
+    loadConfig();
   } else { alert('❌ Wrong password!'); }
 }
 // Auto-login if remembered session is valid
@@ -312,6 +313,7 @@ function checkPw() {
       if (s.ok && s.exp > Date.now()) {
         document.getElementById('pwScreen').style.display = 'none';
         document.getElementById('mainUI').style.display = 'block';
+        setTimeout(loadConfig, 500);
       } else {
         localStorage.removeItem('1n1_auth');
       }
@@ -329,6 +331,38 @@ function togglePl(k) {
   t.classList.toggle('on', state[k]);
   s.textContent = state[k] ? '● ON' : '● OFF';
   s.className = 'status ' + (state[k] ? 'on' : 'off');
+}
+function setToggle(k, on) {
+  state[k] = !!on;
+  const t = document.getElementById(k === 'main' ? 'mainToggle' : k + 'Toggle');
+  const s = document.getElementById(k === 'main' ? 'mainStatus' : k + 'Status');
+  if (t) t.classList.toggle('on', state[k]);
+  if (s) { s.textContent = state[k] ? '● ON' : '● OFF'; s.className = 'status ' + (state[k] ? 'on' : 'off'); }
+}
+// Load existing config from GitHub so codes/URLs persist after refresh
+function setVal(id, v) { const el = document.getElementById(id); if (el && v !== undefined && v !== null) el.value = v; }
+async function loadConfig() {
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/AlexRochy/1n1-iptv-config/main/playlist-config.json?t=' + Date.now());
+    if (!r.ok) return;
+    const cfg = await r.json();
+    // Playlists
+    if (cfg.main) { setVal('mainUrl', cfg.main.url); setToggle('main', cfg.main.enabled); }
+    if (cfg.backup1) { setVal('b1Url', cfg.backup1.url); setToggle('b1', cfg.backup1.enabled); }
+    if (cfg.backup2) { setVal('b2Url', cfg.backup2.url); setToggle('b2', cfg.backup2.enabled); }
+    if (cfg.extra && cfg.extra.length) { setVal('extraUrl', cfg.extra[0].url); setToggle('ex', cfg.extra[0].enabled); }
+    // Ads
+    if (cfg.ads) {
+      const a = cfg.ads;
+      setVal('adCode', a.banner_code); setVal('adInterval', a.interval_minutes); setVal('adDuration', a.duration_seconds);
+      setVal('popupCode', a.popup_code); setVal('popupInterval', a.popup_interval_minutes); setVal('popupDuration', a.popup_duration_seconds);
+      setVal('sidebarCode', a.sidebar_code); setVal('sidebarInterval', a.sidebar_interval_minutes); setVal('sidebarDuration', a.sidebar_duration_seconds);
+      setVal('comboInterval', a.combo_interval_minutes); setVal('comboDuration', a.combo_duration_seconds);
+      setVal('smartlinkUrl', a.smartlink_url); setVal('smartlinkInterval', a.smartlink_interval_minutes); setVal('smartlinkDuration', a.smartlink_duration_seconds);
+      setToggle('ad', a.enabled); setToggle('popup', a.popup_enabled); setToggle('sidebar', a.sidebar_enabled);
+      setToggle('combo', a.combo_enabled); setToggle('smartlink', a.smartlink_enabled);
+    }
+  } catch (e) { console.log('loadConfig failed', e); }
 }
 function generate() {
   const cfg = buildConfig();
