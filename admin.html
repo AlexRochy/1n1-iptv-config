@@ -88,7 +88,6 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <a onclick="showPage('playlist')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">📋 Playlist</a>
     <a onclick="showPage('ads')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">📢 Advertisement</a>
     <a onclick="showPage('update')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">🔄 App Update</a>
-    <a onclick="showPage('github')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">🚀 GitHub Save</a>
     <a onclick="logout()" style="display:block;padding:14px 20px;color:#ef4444;cursor:pointer;font-size:15px;border-top:1px solid #334155;margin-top:10px">🚪 Logout</a>
   </div>
   <div id="overlay" onclick="toggleMenu()" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:150;display:none"></div>
@@ -136,6 +135,14 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
   </div>
   <button class="btn btn-save" onclick="generate()">💾 Generate Config</button>
   <button class="btn btn-save" onclick="copyJSON()" style="background:#8b5cf6">📋 Copy JSON</button>
+  <div class="card" style="margin-top:15px">
+    <h2>🚀 Direct GitHub Save</h2>
+    <label>GitHub Token (Settings → Developer settings → Personal access tokens)</label>
+    <input type="text" id="ghToken" placeholder="ghp_xxxx...">
+    <button class="btn btn-save" onclick="saveToGitHub()" style="background:#22c55e">☁️ Save Directly to GitHub</button>
+    <p id="saveStatus" style="margin-top:10px;font-size:14px"></p>
+  </div>
+  <div class="output" id="output"></div>
   </div><!-- /page-playlist -->
 
   <!-- PAGE: Ads -->
@@ -242,26 +249,6 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <div class="output" id="versionOutput" style="display:none;margin-top:10px"></div>
   </div>
   </div><!-- /page-update -->
-
-  <!-- PAGE: GitHub -->
-  <div id="page-github" class="page" style="display:none">
-  <div class="card" style="margin-top:15px">
-    <h2>🚀 Direct GitHub Save</h2>
-    <label>GitHub Token (Settings → Developer settings → Personal access tokens)</label>
-    <input type="text" id="ghToken" placeholder="ghp_xxxx...">
-    <button class="btn btn-save" onclick="saveToGitHub()" style="background:#22c55e">☁️ Save Directly to GitHub</button>
-    <p id="saveStatus" style="margin-top:10px;font-size:14px"></p>
-  </div>
-  <div class="output" id="output"></div>
-
-  <div class="hint">
-    📋 <b>How to use:</b><br>
-    1. URL boshao + ON/OFF koro<br>
-    2. "Generate Config" chapo<br>
-    3. JSON copy kore GitHub-e <b>playlist-config.json</b> update koro<br>
-    4. App auto-notun playlist load korbe! ✅
-  </div>
-  </div><!-- /page-github -->
 </div>
 
 <script>
@@ -273,7 +260,7 @@ function toggleMenu() {
   else { d.style.left = '0px'; o.style.display = 'block'; }
 }
 function showPage(name) {
-  var pages = ['playlist','ads','update','github'];
+  var pages = ['playlist','ads','update'];
   pages.forEach(function(p){
     document.getElementById('page-'+p).style.display = (p === name) ? 'block' : 'none';
   });
