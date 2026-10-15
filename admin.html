@@ -409,45 +409,29 @@ async function saveToGitHub() {
 }
 document.getElementById('pwInput').addEventListener('keypress', e => { if (e.key === 'Enter') checkPw(); });
 </script>
-<!-- Firebase Analytics Dashboard -->
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<!-- Analytics Dashboard (REST API - no SDK needed) -->
 <script>
-// Firebase config for 1N1 IPTV (project: n1-iptv)
-const firebaseConfig = {
-  apiKey: "AIzaSyBEUi9ug7pwwZjZMOZp8F7sd5x7XlItSfY",
-  authDomain: "n1-iptv.firebaseapp.com",
-  databaseURL: "https://n1-iptv-default-rtdb.firebaseio.com",
-  projectId: "n1-iptv",
-  storageBucket: "n1-iptv.firebasestorage.app",
-  messagingSenderId: "18095592675",
-  appId: "1:18095592675:android:c1a68748cd3a055d49e1d6"
-};
-try {
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  // Total Downloads = count of installs
-  db.ref('installs').on('value', (snap) => {
-    const count = snap.numChildren();
-    document.getElementById('totalDownloads').textContent = count;
-  });
-
-  // Live Now = count of live_users with last_seen within 10 minutes
-  db.ref('live_users').on('value', (snap) => {
-    const now = Date.now();
-    let live = 0;
-    snap.forEach((child) => {
-      const data = child.val();
-      if (data && data.last_seen && (now - data.last_seen) < 10 * 60 * 1000) {
-        live++;
-      }
-    });
-    document.getElementById('liveCount').textContent = live;
-    // Green dot when live > 0
-    document.getElementById('liveDot').style.color = live > 0 ? '#22c55e' : '#666';
-  });
-} catch(e) { console.log('Firebase init failed:', e); }
+(function() {
+  var DB = 'https://n1-iptv-default-rtdb.firebaseio.com';
+  function updateDashboard() {
+    fetch(DB + '/live_users.json').then(function(r){return r.json();}).then(function(data){
+      var now = Date.now(), live = 0;
+      if (data) { for (var k in data) {
+        if (data[k] && data[k].last_seen && (now - data[k].last_seen) < 10*60*1000) live++;
+      }}
+      var el = document.getElementById('liveCount');
+      if (el) el.textContent = live;
+      var dot = document.getElementById('liveDot');
+      if (dot) dot.style.color = live > 0 ? '#22c55e' : '#666';
+    }).catch(function(e){});
+    fetch(DB + '/installs.json').then(function(r){return r.json();}).then(function(data){
+      var el = document.getElementById('totalDownloads');
+      if (el) el.textContent = data ? Object.keys(data).length : 0;
+    }).catch(function(e){});
+  }
+  updateDashboard();
+  setInterval(updateDashboard, 30000);
+})();
 </script>
 </body>
 </html>
