@@ -52,7 +52,18 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
       <h1>📺 1N1 IPTV</h1>
       <p class="subtitle">Admin Panel — Playlist Control</p>
     </div>
-    <button onclick="logout()" style="background:#ef4444;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px">🚪 Logout</button>
+    <div style="display:flex;gap:12px;align-items:center">
+      <!-- Analytics Dashboard -->
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:8px 14px;text-align:center">
+        <div style="font-size:11px;color:#94a3b8">📥 TOTAL DOWNLOAD</div>
+        <div id="totalDownloads" style="font-size:22px;font-weight:bold;color:#fff">—</div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:8px 14px;text-align:center">
+        <div style="font-size:11px;color:#94a3b8"><span id="liveDot" style="color:#666">●</span> LIVE NOW</div>
+        <div id="liveCount" style="font-size:22px;font-weight:bold;color:#fff">—</div>
+      </div>
+      <button onclick="logout()" style="background:#ef4444;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px">🚪 Logout</button>
+    </div>
   </div>
 
   <div class="card">
@@ -386,6 +397,46 @@ async function saveToGitHub() {
   }
 }
 document.getElementById('pwInput').addEventListener('keypress', e => { if (e.key === 'Enter') checkPw(); });
+</script>
+<!-- Firebase Analytics Dashboard -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<script>
+// Firebase config for 1N1 IPTV (project: n1-iptv)
+const firebaseConfig = {
+  apiKey: "AIzaSyBEUi9ug7pwwZjZMOZp8F7sd5x7XlItSfY",
+  authDomain: "n1-iptv.firebaseapp.com",
+  databaseURL: "https://n1-iptv-default-rtdb.firebaseio.com",
+  projectId: "n1-iptv",
+  storageBucket: "n1-iptv.firebasestorage.app",
+  messagingSenderId: "18095592675",
+  appId: "1:18095592675:android:c1a68748cd3a055d49e1d6"
+};
+try {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Total Downloads = count of installs
+  db.ref('installs').on('value', (snap) => {
+    const count = snap.numChildren();
+    document.getElementById('totalDownloads').textContent = count;
+  });
+
+  // Live Now = count of live_users with last_seen within 10 minutes
+  db.ref('live_users').on('value', (snap) => {
+    const now = Date.now();
+    let live = 0;
+    snap.forEach((child) => {
+      const data = child.val();
+      if (data && data.last_seen && (now - data.last_seen) < 10 * 60 * 1000) {
+        live++;
+      }
+    });
+    document.getElementById('liveCount').textContent = live;
+    // Green dot when live > 0
+    document.getElementById('liveDot').style.color = live > 0 ? '#22c55e' : '#666';
+  });
+} catch(e) { console.log('Firebase init failed:', e); }
 </script>
 </body>
 </html>
