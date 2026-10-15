@@ -226,6 +226,27 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
       <div class="toggle" id="comboToggle" onclick="togglePl('combo')"></div>
     </div>
   </div>
+
+  <div class="card">
+    <h2>🔗 SmartLink Ad — Choto Popup</h2>
+    <p style="font-size:13px;color:#aaa;margin-bottom:10px">Adsterra SmartLink URL — choto popup-e khulbe, auto-close!</p>
+    <label>SmartLink URL</label>
+    <input type="text" id="smartlinkUrl" placeholder="https://www.highrevenuegate.com/...">
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <div style="flex:1">
+        <label>Kotokkhon por por (minit)</label>
+        <input type="text" id="smartlinkInterval" value="15">
+      </div>
+      <div style="flex:1">
+        <label>Kotokkhon dekhabe (sec)</label>
+        <input type="text" id="smartlinkDuration" value="15">
+      </div>
+    </div>
+    <div class="row">
+      <span class="status off" id="smartlinkStatus">● OFF</span>
+      <div class="toggle" id="smartlinkToggle" onclick="togglePl('smartlink')"></div>
+    </div>
+  </div>
   </div><!-- /page-ads -->
 
   <!-- PAGE: App Update -->
@@ -268,7 +289,7 @@ function showPage(name) {
   toggleMenu();
   window.scrollTo(0,0);
 }
-const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false, combo: false };
+const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false, combo: false, smartlink: false };
 function checkPw() {
   if (document.getElementById('pwInput').value === 'shahin123') {
     // Remember me for 30 days
@@ -401,7 +422,11 @@ function buildConfig() {
     sidebar_duration_seconds: parseInt(document.getElementById('sidebarDuration').value) || 60,
     combo_enabled: state.combo || false,
     combo_interval_minutes: parseInt(document.getElementById('comboInterval').value) || 30,
-    combo_duration_seconds: parseInt(document.getElementById('comboDuration').value) || 60
+    combo_duration_seconds: parseInt(document.getElementById('comboDuration').value) || 60,
+    smartlink_enabled: state.smartlink || false,
+    smartlink_url: document.getElementById('smartlinkUrl').value,
+    smartlink_interval_minutes: parseInt(document.getElementById('smartlinkInterval').value) || 15,
+    smartlink_duration_seconds: parseInt(document.getElementById('smartlinkDuration').value) || 15
   };
   return cfg;
 }
