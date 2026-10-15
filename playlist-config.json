@@ -32,7 +32,7 @@
     "combo_enabled": true,
     "combo_interval_minutes": 2,
     "combo_duration_seconds": 10,
-    "smartlink_enabled": false,
+    "smartlink_enabled": true,
     "smartlink_url": "https://www.profitableratecpmnetwork.com/sfm35euc?key=24a7f3a88353d3b0909f8e1677073e92",
     "smartlink_interval_minutes": 1,
     "smartlink_duration_seconds": 10,
