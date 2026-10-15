@@ -59,9 +59,12 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
 
 <div class="container" id="mainUI" style="display:none">
   <div style="display:flex;justify-content:space-between;align-items:center">
-    <div>
-      <h1>📺 1N1 IPTV</h1>
-      <p class="subtitle">Admin Panel — Playlist Control</p>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button onclick="toggleMenu()" style="background:#1e293b;border:1px solid #334155;color:#fff;font-size:20px;padding:8px 12px;border-radius:8px;cursor:pointer">☰</button>
+      <div>
+        <h1 style="text-align:left;margin:0">📺 1N1 IPTV</h1>
+        <p class="subtitle" style="text-align:left;margin:0">Admin Panel</p>
+      </div>
     </div>
     <div style="display:flex;gap:12px;align-items:center">
       <!-- Analytics Dashboard -->
@@ -73,10 +76,25 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
         <div style="font-size:11px;color:#94a3b8"><span id="liveDot" style="color:#666">●</span> LIVE NOW</div>
         <div id="liveCount" style="font-size:22px;font-weight:bold;color:#fff">—</div>
       </div>
-      <button onclick="logout()" style="background:#ef4444;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px">🚪 Logout</button>
     </div>
   </div>
 
+  <!-- Side Drawer Menu -->
+  <div id="drawer" style="position:fixed;top:0;left:-260px;width:250px;height:100%;background:#1e293b;border-right:1px solid #334155;z-index:200;transition:left .25s;padding:20px 0">
+    <div style="padding:0 20px 15px;border-bottom:1px solid #334155;margin-bottom:10px">
+      <div style="font-size:18px;font-weight:bold;color:#fbbf24">📺 1N1 IPTV</div>
+      <div style="font-size:12px;color:#94a3b8">Menu</div>
+    </div>
+    <a onclick="showPage('playlist')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">📋 Playlist</a>
+    <a onclick="showPage('ads')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">📢 Advertisement</a>
+    <a onclick="showPage('update')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">🔄 App Update</a>
+    <a onclick="showPage('github')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">🚀 GitHub Save</a>
+    <a onclick="logout()" style="display:block;padding:14px 20px;color:#ef4444;cursor:pointer;font-size:15px;border-top:1px solid #334155;margin-top:10px">🚪 Logout</a>
+  </div>
+  <div id="overlay" onclick="toggleMenu()" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:150;display:none"></div>
+
+  <!-- PAGE: Playlist -->
+  <div id="page-playlist" class="page">
   <div class="card">
     <h2>🔵 Main Playlist</h2>
     <label>M3U URL</label>
@@ -116,7 +134,12 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
       <div class="toggle" id="exToggle" onclick="togglePl('ex')"></div>
     </div>
   </div>
+  <button class="btn btn-save" onclick="generate()">💾 Generate Config</button>
+  <button class="btn btn-save" onclick="copyJSON()" style="background:#8b5cf6">📋 Copy JSON</button>
+  </div><!-- /page-playlist -->
 
+  <!-- PAGE: Ads -->
+  <div id="page-ads" class="page" style="display:none">
   <div class="card">
     <h2>📢 Banner Ad (728x90) — Niche</h2>
     <label>Banner Ad Code (JavaScript/HTML)</label>
@@ -195,7 +218,10 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
       <div class="toggle" id="comboToggle" onclick="togglePl('combo')"></div>
     </div>
   </div>
+  </div><!-- /page-ads -->
 
+  <!-- PAGE: App Update -->
+  <div id="page-update" class="page" style="display:none">
   <div class="card">
     <h2>🔄 App Update Management</h2>
     <label>Version Code (number, barate hobe)</label>
@@ -215,9 +241,10 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <button class="btn btn-save" onclick="copyVersion()" style="background:#8b5cf6">📋 Copy version.json</button>
     <div class="output" id="versionOutput" style="display:none;margin-top:10px"></div>
   </div>
+  </div><!-- /page-update -->
 
-  <button class="btn btn-save" onclick="generate()">💾 Generate Config</button>
-  <button class="btn btn-save" onclick="copyJSON()" style="background:#8b5cf6">📋 Copy JSON</button>
+  <!-- PAGE: GitHub -->
+  <div id="page-github" class="page" style="display:none">
   <div class="card" style="margin-top:15px">
     <h2>🚀 Direct GitHub Save</h2>
     <label>GitHub Token (Settings → Developer settings → Personal access tokens)</label>
@@ -234,9 +261,25 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     3. JSON copy kore GitHub-e <b>playlist-config.json</b> update koro<br>
     4. App auto-notun playlist load korbe! ✅
   </div>
+  </div><!-- /page-github -->
 </div>
 
 <script>
+// Side menu
+function toggleMenu() {
+  var d = document.getElementById('drawer');
+  var o = document.getElementById('overlay');
+  if (d.style.left === '0px') { d.style.left = '-260px'; o.style.display = 'none'; }
+  else { d.style.left = '0px'; o.style.display = 'block'; }
+}
+function showPage(name) {
+  var pages = ['playlist','ads','update','github'];
+  pages.forEach(function(p){
+    document.getElementById('page-'+p).style.display = (p === name) ? 'block' : 'none';
+  });
+  toggleMenu();
+  window.scrollTo(0,0);
+}
 const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false, combo: false };
 function checkPw() {
   if (document.getElementById('pwInput').value === 'shahin123') {
@@ -417,7 +460,7 @@ document.getElementById('pwInput').addEventListener('keypress', e => { if (e.key
     fetch(DB + '/live_users.json').then(function(r){return r.json();}).then(function(data){
       var now = Date.now(), live = 0;
       if (data) { for (var k in data) {
-        if (data[k] && data[k].last_seen && (now - data[k].last_seen) < 10*60*1000) live++;
+        if (data[k] && data[k].last_seen && (now - data[k].last_seen) < 6*60*1000) live++;
       }}
       var el = document.getElementById('liveCount');
       if (el) el.textContent = live;
