@@ -149,6 +149,12 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
   <!-- PAGE: Ads -->
   <div id="page-ads" class="page" style="display:none">
   <div class="card">
+    <h2>🔄 Ad Rotation</h2>
+    <p style="font-size:13px;color:#aaa;margin-bottom:10px">Ekbare 1-ta ad dekhabe, ghure ghure!</p>
+    <label>Kotokkhon por por notun ad (minit)</label>
+    <input type="text" id="rotationInterval" value="5">
+  </div>
+  <div class="card">
     <h2>📢 Banner Ad (728x90) — Niche</h2>
     <label>Banner Ad Code (JavaScript/HTML)</label>
     <input type="text" id="adCode" placeholder="<script>...</script> paste koro">
@@ -359,6 +365,7 @@ async function loadConfig() {
       setVal('sidebarCode', a.sidebar_code); setVal('sidebarInterval', a.sidebar_interval_minutes); setVal('sidebarDuration', a.sidebar_duration_seconds);
       setVal('comboInterval', a.combo_interval_minutes); setVal('comboDuration', a.combo_duration_seconds);
       setVal('smartlinkUrl', a.smartlink_url); setVal('smartlinkInterval', a.smartlink_interval_minutes); setVal('smartlinkDuration', a.smartlink_duration_seconds);
+      setVal('rotationInterval', a.rotation_interval_minutes);
       setToggle('ad', a.enabled); setToggle('popup', a.popup_enabled); setToggle('sidebar', a.sidebar_enabled);
       setToggle('combo', a.combo_enabled); setToggle('smartlink', a.smartlink_enabled);
     }
@@ -462,7 +469,8 @@ function buildConfig() {
     smartlink_enabled: state.smartlink || false,
     smartlink_url: document.getElementById('smartlinkUrl').value,
     smartlink_interval_minutes: parseInt(document.getElementById('smartlinkInterval').value) || 15,
-    smartlink_duration_seconds: parseInt(document.getElementById('smartlinkDuration').value) || 15
+    smartlink_duration_seconds: parseInt(document.getElementById('smartlinkDuration').value) || 15,
+    rotation_interval_minutes: parseInt(document.getElementById('rotationInterval').value) || 5
   };
   return cfg;
 }
