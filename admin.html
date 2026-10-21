@@ -288,9 +288,11 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <button class="btn" onclick="loadUsersPage()" style="background:#334155;color:#fff;margin-top:8px">🔄 Refresh</button>
   </div>
   <div class="card">
-    <h2>👥 Users</h2>
+    <h2 onclick="toggleUserList()" style="cursor:pointer" title="Click korle khulbe/bondho hobe">👥 User List <span id="userCount" style="color:#38bdf8"></span> <span id="userListArrow" style="float:right">▶</span></h2>
+    <div id="userListWrap" style="display:none">
     <input type="text" id="userSearch" placeholder="🔍 ID ba nam diye khujun (jemon 1042)" oninput="renderUsers()">
     <div id="userList" style="margin-top:10px"><p style="color:#94a3b8;font-size:13px">Load hocche…</p></div>
+    </div>
   </div>
   <div class="card">
     <h2>📊 Report</h2>
@@ -313,7 +315,17 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
       <div style="flex:1"><label>Free Trial (din)</label><input type="text" id="billTrial" value="3"></div>
       <div style="flex:1"><label>Free Channel (koyta)</label><input type="text" id="billFree" value="5"></div>
     </div>
-    <p style="font-size:12px;color:#f59e0b;margin-top:8px">⚠️ Settings save korte Playlist page-e giye "Save to GitHub" (token diye) ba Generate kore config update koro.</p>
+    <p style="font-size:12px;color:#f59e0b;margin-top:8px">⚠️ Settings save korte nicher GitHub Config box theke Copy ba Save to GitHub koro.</p>
+  </div>
+  <div class="card">
+    <h2>💾 GitHub Config</h2>
+    <p style="font-size:12px;color:#94a3b8">Billing settings shoho full config ekhane thekei copy/save korte parba — Playlist page e jete hobe na.</p>
+    <button class="btn" onclick="generateUsers()" style="background:#0284c7;color:#fff">📋 Generate &amp; Copy Config</button>
+    <textarea id="genOutputUsers" rows="6" readonly placeholder="Generate korle ekhane config ashbe"></textarea>
+    <label style="margin-top:10px">GitHub Token</label>
+    <input type="password" id="ghTokenUsers" placeholder="ghp_...">
+    <button class="btn" onclick="saveToGitHubUsers()" style="background:#16a34a;color:#fff;margin-top:6px">💾 Save to GitHub</button>
+    <p id="ghStatusUsers" style="font-size:13px;margin-top:6px"></p>
   </div>
   </div><!-- /page-users -->
 
@@ -636,8 +648,38 @@ async function rejectReq(k) {
   loadUsersPage();
 }
 
+function toggleUserList() {
+  var w = document.getElementById('userListWrap');
+  var open = w.style.display !== 'none';
+  w.style.display = open ? 'none' : 'block';
+  document.getElementById('userListArrow').textContent = open ? '▶' : '▼';
+}
+function generateUsers() {
+  var json = JSON.stringify(buildConfig(), null, 2);
+  var ta = document.getElementById('genOutputUsers');
+  ta.value = json;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(json).then(function() {
+      alert('✅ Config copy hoyeche!');
+    }).catch(function() { ta.select(); });
+  } else { ta.select(); }
+}
+function saveToGitHubUsers() {
+  var t = document.getElementById('ghTokenUsers').value.trim();
+  if (!t) { alert('Age GitHub token daw'); return; }
+  document.getElementById('ghToken').value = t;
+  saveToGitHub();
+  var iv = setInterval(function() {
+    var s = document.getElementById('ghStatus');
+    var o = document.getElementById('ghStatusUsers');
+    if (s && o) { o.textContent = s.textContent; o.style.color = s.style.color; }
+  }, 500);
+  setTimeout(function() { clearInterval(iv); }, 15000);
+}
 function renderUsers() {
   var box = document.getElementById('userList');
+  var cntEl = document.getElementById('userCount');
+  if (cntEl) cntEl.textContent = '(' + Object.keys(usersCache).length + ' jon)';
   var q = (document.getElementById('userSearch').value || '').toLowerCase().trim();
   var keys = Object.keys(usersCache);
   keys.sort(function(a, b) { return (usersCache[a].display_id || 0) - (usersCache[b].display_id || 0); });
