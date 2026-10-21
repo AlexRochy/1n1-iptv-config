@@ -533,8 +533,8 @@ function buildConfig() {
   cfg.billing = {
     enabled: state.billing || false,
     price: parseInt(document.getElementById('billPrice').value) || 100,
-    trial_days: parseInt(document.getElementById('billTrial').value) || 3,
-    free_channels: parseInt(document.getElementById('billFree').value) || 5,
+    trial_days: (function(){var v=parseInt(document.getElementById('billTrial').value); return isNaN(v)?3:Math.max(0,v);})(),
+    free_channels: (function(){var v=parseInt(document.getElementById('billFree').value); return isNaN(v)?5:Math.max(0,v);})(),
     bkash_number: document.getElementById('billNumber').value,
     bkash_qr_url: document.getElementById('billQr').value
   };
