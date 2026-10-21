@@ -89,6 +89,7 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <a onclick="showPage('playlist')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">📋 Playlist</a>
     <a onclick="showPage('ads')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">📢 Advertisement</a>
     <a onclick="showPage('update')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">🔄 App Update</a>
+    <a onclick="showPage('users')" style="display:block;padding:14px 20px;color:#e2e8f0;cursor:pointer;font-size:15px">👥 Users & Payments</a>
     <a onclick="logout()" style="display:block;padding:14px 20px;color:#ef4444;cursor:pointer;font-size:15px;border-top:1px solid #334155;margin-top:10px">🚪 Logout</a>
   </div>
   <div id="overlay" onclick="toggleMenu()" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:150;display:none"></div>
@@ -279,6 +280,43 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <div class="output" id="versionOutput" style="display:none;margin-top:10px"></div>
   </div>
   </div><!-- /page-update -->
+  <!-- PAGE: Users & Payments -->
+  <div id="page-users" class="page" style="display:none">
+  <div class="card">
+    <h2>💳 Payment Requests (Pending)</h2>
+    <div id="reqList"><p style="color:#94a3b8;font-size:13px">Load hocche…</p></div>
+    <button class="btn" onclick="loadUsersPage()" style="background:#334155;color:#fff;margin-top:8px">🔄 Refresh</button>
+  </div>
+  <div class="card">
+    <h2>👥 Users</h2>
+    <input type="text" id="userSearch" placeholder="🔍 ID ba nam diye khujun (jemon 1042)" oninput="renderUsers()">
+    <div id="userList" style="margin-top:10px"><p style="color:#94a3b8;font-size:13px">Load hocche…</p></div>
+  </div>
+  <div class="card">
+    <h2>📊 Report</h2>
+    <div id="reportBox"><p style="color:#94a3b8;font-size:13px">Load hocche…</p></div>
+  </div>
+  <div class="card">
+    <h2>⚙️ Billing Settings</h2>
+    <label>Billing System</label>
+    <div class="row">
+      <span class="status off" id="billingStatus">● OFF</span>
+      <div class="toggle" id="billingToggle" onclick="togglePl('billing')"></div>
+      <span style="font-size:13px;color:#aaa">ON korlei trial/lock chalu hobe (age sobar Lifetime diye nio!)</span>
+    </div>
+    <label>bKash Number (Send Money)</label>
+    <input type="text" id="billNumber" placeholder="01XXXXXXXXX">
+    <label>bKash QR Image URL (optional)</label>
+    <input type="text" id="billQr" placeholder="https://...qr.png">
+    <div style="display:flex;gap:10px">
+      <div style="flex:1"><label>Price (৳/mas)</label><input type="text" id="billPrice" value="100"></div>
+      <div style="flex:1"><label>Free Trial (din)</label><input type="text" id="billTrial" value="3"></div>
+      <div style="flex:1"><label>Free Channel (koyta)</label><input type="text" id="billFree" value="5"></div>
+    </div>
+    <p style="font-size:12px;color:#f59e0b;margin-top:8px">⚠️ Settings save korte Playlist page-e giye "Save to GitHub" (token diye) ba Generate kore config update koro.</p>
+  </div>
+  </div><!-- /page-users -->
+
 </div>
 
 <script>
@@ -290,14 +328,15 @@ function toggleMenu() {
   else { d.style.left = '0px'; o.style.display = 'block'; }
 }
 function showPage(name) {
-  var pages = ['playlist','ads','update'];
+  var pages = ['playlist','ads','update','users'];
+  if (name === 'users' && typeof loadUsersPage === 'function') loadUsersPage();
   pages.forEach(function(p){
     document.getElementById('page-'+p).style.display = (p === name) ? 'block' : 'none';
   });
   toggleMenu();
   window.scrollTo(0,0);
 }
-const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false, combo: false, smartlink: false };
+const state = { main: true, b1: false, b2: false, ex: false, ad: false, popup: false, sidebar: false, force: false, combo: false, smartlink: false, billing: false };
 function checkPw() {
   if (document.getElementById('pwInput').value === 'shahin123') {
     // Remember me for 30 days
@@ -368,6 +407,12 @@ async function loadConfig() {
       setVal('rotationInterval', a.rotation_interval_minutes);
       setToggle('ad', a.enabled); setToggle('popup', a.popup_enabled); setToggle('sidebar', a.sidebar_enabled);
       setToggle('combo', a.combo_enabled); setToggle('smartlink', a.smartlink_enabled);
+    }
+    if (cfg.billing) {
+      const b = cfg.billing;
+      setVal('billNumber', b.bkash_number); setVal('billQr', b.bkash_qr_url);
+      setVal('billPrice', b.price); setVal('billTrial', b.trial_days); setVal('billFree', b.free_channels);
+      setToggle('billing', b.enabled);
     }
   } catch (e) { console.log('loadConfig failed', e); }
 }
@@ -472,6 +517,15 @@ function buildConfig() {
     smartlink_duration_seconds: parseInt(document.getElementById('smartlinkDuration').value) || 15,
     rotation_interval_minutes: parseInt(document.getElementById('rotationInterval').value) || 5
   };
+  // Billing / subscription config
+  cfg.billing = {
+    enabled: state.billing || false,
+    price: parseInt(document.getElementById('billPrice').value) || 100,
+    trial_days: parseInt(document.getElementById('billTrial').value) || 3,
+    free_channels: parseInt(document.getElementById('billFree').value) || 5,
+    bkash_number: document.getElementById('billNumber').value,
+    bkash_qr_url: document.getElementById('billQr').value
+  };
   return cfg;
 }
 async function saveToGitHub() {
@@ -509,6 +563,201 @@ async function saveToGitHub() {
 }
 document.getElementById('pwInput').addEventListener('keypress', e => { if (e.key === 'Enter') checkPw(); });
 </script>
+<!-- Users & Payments (Firebase REST) -->
+<script>
+var FB = 'https://n1-iptv-default-rtdb.firebaseio.com';
+var usersCache = {}, requestsCache = {}, paymentsCache = {};
+
+function fmtD(ts) {
+  if (!ts) return '—';
+  var d = new Date(ts);
+  return d.toLocaleDateString('en-GB') + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+}
+function uStatus(u) {
+  if (u.plan === 'lifetime') return {t: '⭐ Lifetime', c: '#22c55e'};
+  if (u.plan === 'off') return {t: '⛔ OFF', c: '#ef4444'};
+  if (u.expiry && u.expiry > Date.now()) {
+    var days = Math.ceil((u.expiry - Date.now()) / 86400000);
+    return {t: (u.plan === 'trial' ? '🆓 Trial' : '✅ Paid') + ' — ' + days + ' din baki', c: '#38bdf8'};
+  }
+  return {t: '🔒 Expired', c: '#f59e0b'};
+}
+async function fbGet(p) { try { const r = await fetch(FB + p + '.json'); return await r.json(); } catch (e) { return null; } }
+async function fbPut(p, o) { return fetch(FB + p + '.json', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(o)}); }
+async function fbPost(p, o) { try { const r = await fetch(FB + p + '.json', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(o)}); return await r.json(); } catch (e) { return null; } }
+
+async function loadUsersPage() {
+  usersCache = (await fbGet('/users')) || {};
+  requestsCache = (await fbGet('/payment_requests')) || {};
+  paymentsCache = (await fbGet('/payments')) || {};
+  renderRequests(); renderUsers(); renderReports();
+}
+
+function renderRequests() {
+  var box = document.getElementById('reqList');
+  var keys = Object.keys(requestsCache).filter(function(k) { return requestsCache[k] && requestsCache[k].status === 'pending'; });
+  keys.sort(function(a, b) { return (requestsCache[b].ts || 0) - (requestsCache[a].ts || 0); });
+  if (!keys.length) { box.innerHTML = '<p style="color:#22c55e;font-size:14px">✅ Kono pending request nai</p>'; return; }
+  box.innerHTML = keys.map(function(k) {
+    var r = requestsCache[k];
+    var u = usersCache[r.device_key] || {};
+    return '<div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:12px;margin-bottom:10px">' +
+      '<div style="font-size:16px;color:#fff"><b>1N1-' + r.display_id + '</b>' + (u.name ? ' <span style="color:#94a3b8">(' + u.name + ')</span>' : '') +
+      ' <span style="float:right;color:#22c55e;font-weight:bold">৳' + (r.amount || 100) + '</span></div>' +
+      '<div style="font-size:13px;color:#cbd5e1;margin-top:4px">📱 Sender: ' + r.sender + '<br>🧾 TrxID: <b>' + r.trxid + '</b><br>🕐 ' + fmtD(r.ts) + '</div>' +
+      '<div style="margin-top:10px;display:flex;gap:8px">' +
+      '<button onclick="approveReq(\'' + k + '\')" style="flex:1;background:#22c55e;color:#fff;border:none;padding:10px;border-radius:8px;font-size:15px;cursor:pointer">✅ Approve (+30 din)</button>' +
+      '<button onclick="rejectReq(\'' + k + '\')" style="flex:1;background:#ef4444;color:#fff;border:none;padding:10px;border-radius:8px;font-size:15px;cursor:pointer">❌ Reject</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+async function approveReq(k) {
+  var r = requestsCache[k]; if (!r) return;
+  var u = usersCache[r.device_key];
+  if (!u) { alert('❌ User record pawa jay nai!'); return; }
+  if (!confirm('1N1-' + r.display_id + ' ke +30 din diba? Age bKash-e TrxID miliye nio!')) return;
+  var now = Date.now();
+  var base = (u.expiry && u.expiry > now) ? u.expiry : now;
+  u.expiry = base + 30 * 86400000; u.plan = 'paid';
+  await fbPut('/users/' + r.device_key, u);
+  await fbPost('/payments', {device_key: r.device_key, display_id: r.display_id, method: 'online', amount: r.amount || 100, ts: now});
+  await fbPut('/used_trxids/' + r.trxid, r.device_key);
+  r.status = 'approved';
+  await fbPut('/payment_requests/' + k, r);
+  alert('✅ Chalu hoyeche!');
+  loadUsersPage();
+}
+async function rejectReq(k) {
+  var r = requestsCache[k]; if (!r) return;
+  if (!confirm('Ei request reject korba?')) return;
+  r.status = 'rejected';
+  await fbPut('/payment_requests/' + k, r);
+  loadUsersPage();
+}
+
+function renderUsers() {
+  var box = document.getElementById('userList');
+  var q = (document.getElementById('userSearch').value || '').toLowerCase().trim();
+  var keys = Object.keys(usersCache);
+  keys.sort(function(a, b) { return (usersCache[a].display_id || 0) - (usersCache[b].display_id || 0); });
+  var html = '';
+  var shown = 0;
+  keys.forEach(function(k) {
+    var u = usersCache[k];
+    if (q && String(u.display_id).indexOf(q) < 0 && (u.name || '').toLowerCase().indexOf(q) < 0) return;
+    shown++;
+    var st = uStatus(u);
+    html += '<div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:12px;margin-bottom:10px">' +
+      '<div style="font-size:16px;color:#fff"><b>1N1-' + u.display_id + '</b> ' +
+      '<span style="color:#e2e8f0">' + (u.name || '<i style="color:#64748b">nam nai</i>') + '</span>' +
+      ' <span style="float:right;color:' + st.c + ';font-size:13px;font-weight:bold">' + st.t + '</span></div>' +
+      '<div style="font-size:12px;color:#94a3b8;margin-top:4px">Meyad: ' + (u.plan === 'lifetime' ? '♾️' : fmtD(u.expiry)) + ' • Last seen: ' + fmtD(u.last_seen) + '</div>' +
+      '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">' +
+      '<button onclick="extendUser(\'' + k + '\')" style="background:#0ea5e9;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">💵 +30 din (Cash)</button>' +
+      '<button onclick="lifetimeUser(\'' + k + '\')" style="background:#8b5cf6;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">⭐ Lifetime</button>' +
+      '<button onclick="offUser(\'' + k + '\')" style="background:#ef4444;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">⛔ Off</button>' +
+      '<button onclick="renameUser(\'' + k + '\')" style="background:#334155;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">✏️ Nam</button>' +
+      '</div></div>';
+  });
+  box.innerHTML = shown ? html : '<p style="color:#94a3b8;font-size:14px">Kono user nai ekhono — notun app khulle ekhane asbe</p>';
+}
+
+async function extendUser(k) {
+  var u = usersCache[k]; if (!u) return;
+  if (!confirm('1N1-' + u.display_id + ' ke cash +30 din diba? (Report-e manual payment hishebe uthbe)')) return;
+  var now = Date.now();
+  var base = (u.expiry && u.expiry > now && u.plan !== 'off') ? u.expiry : now;
+  u.expiry = base + 30 * 86400000; u.plan = 'paid';
+  await fbPut('/users/' + k, u);
+  var priceEl = document.getElementById('billPrice');
+  var price = priceEl ? (parseInt(priceEl.value) || 100) : 100;
+  await fbPost('/payments', {device_key: k, display_id: u.display_id, method: 'manual', amount: price, ts: now});
+  alert('✅ +30 din hoyeche!');
+  loadUsersPage();
+}
+async function lifetimeUser(k) {
+  var u = usersCache[k]; if (!u) return;
+  if (!confirm('1N1-' + u.display_id + ' ke LIFETIME diba?')) return;
+  u.plan = 'lifetime';
+  await fbPut('/users/' + k, u);
+  loadUsersPage();
+}
+async function offUser(k) {
+  var u = usersCache[k]; if (!u) return;
+  if (!confirm('1N1-' + u.display_id + ' OFF korba? Sudhu free channel cholbe.')) return;
+  u.plan = 'off';
+  await fbPut('/users/' + k, u);
+  loadUsersPage();
+}
+async function renameUser(k) {
+  var u = usersCache[k]; if (!u) return;
+  var n = prompt('Customer er nam likho:', u.name || '');
+  if (n === null) return;
+  u.name = n.trim();
+  await fbPut('/users/' + k, u);
+  loadUsersPage();
+}
+
+function renderReports() {
+  var box = document.getElementById('reportBox');
+  var pays = Object.keys(paymentsCache).map(function(k) { return paymentsCache[k]; }).filter(function(p) { return p && p.ts; });
+  var now = new Date();
+  var mKey = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  function monthOf(ts) { var d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+  var mOnline = 0, mOnlineN = 0, mManual = 0, mManualN = 0;
+  var months = {};
+  pays.forEach(function(p) {
+    var mk = monthOf(p.ts);
+    if (!months[mk]) months[mk] = 0;
+    months[mk] += (p.amount || 0);
+    if (mk === mKey) {
+      if (p.method === 'online') { mOnline += p.amount || 0; mOnlineN++; }
+      else { mManual += p.amount || 0; mManualN++; }
+    }
+  });
+  // Last 14 days bars
+  var days = [], maxV = 1;
+  for (var i = 13; i >= 0; i--) {
+    var d0 = new Date(); d0.setHours(0, 0, 0, 0); d0.setDate(d0.getDate() - i);
+    var d1 = d0.getTime() + 86400000;
+    var sum = 0;
+    pays.forEach(function(p) { if (p.ts >= d0.getTime() && p.ts < d1) sum += (p.amount || 0); });
+    days.push({label: d0.getDate() + '/' + (d0.getMonth() + 1), v: sum});
+    if (sum > maxV) maxV = sum;
+  }
+  var bars = days.map(function(d) {
+    var h = Math.max(3, Math.round(d.v / maxV * 70));
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">' +
+      '<div style="font-size:9px;color:#94a3b8">' + (d.v ? d.v : '') + '</div>' +
+      '<div style="width:70%;height:' + h + 'px;background:' + (d.v ? '#22c55e' : '#334155') + ';border-radius:3px" title="৳' + d.v + '"></div>' +
+      '<div style="font-size:9px;color:#64748b">' + d.label + '</div></div>';
+  }).join('');
+  // Due list
+  var due = Object.keys(usersCache).map(function(k) { return usersCache[k]; })
+    .filter(function(u) { return u.plan !== 'lifetime' && u.plan !== 'off' && (!u.expiry || u.expiry < Date.now()); });
+  var priceEl = document.getElementById('billPrice');
+  var price = priceEl ? (parseInt(priceEl.value) || 100) : 100;
+  var dueHtml = due.length ? due.map(function(u) {
+    var dOver = u.expiry ? Math.floor((Date.now() - u.expiry) / 86400000) : 0;
+    return '<div style="font-size:13px;color:#fca5a5;padding:3px 0">🔴 1N1-' + u.display_id + (u.name ? ' (' + u.name + ')' : '') + ' — ' + dOver + ' din dhore due</div>';
+  }).join('') : '<p style="color:#22c55e;font-size:13px">✅ Kono due nai</p>';
+  var monthRows = Object.keys(months).sort().reverse().map(function(mk) {
+    return '<div style="font-size:13px;color:#cbd5e1;padding:2px 0">📅 ' + mk + ': <b style="color:#fff">৳' + months[mk] + '</b></div>';
+  }).join('');
+  box.innerHTML =
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">' +
+    '<div style="flex:1;min-width:130px;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:#94a3b8">EI MASH — ONLINE (bKash)</div><div style="font-size:22px;color:#22c55e;font-weight:bold">৳' + mOnline + '</div><div style="font-size:11px;color:#64748b">' + mOnlineN + ' payment</div></div>' +
+    '<div style="flex:1;min-width:130px;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:#94a3b8">EI MASH — MANUAL (Cash)</div><div style="font-size:22px;color:#38bdf8;font-weight:bold">৳' + mManual + '</div><div style="font-size:11px;color:#64748b">' + mManualN + ' payment</div></div>' +
+    '<div style="flex:1;min-width:130px;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:#94a3b8">EI MASH — MOT</div><div style="font-size:22px;color:#fff;font-weight:bold">৳' + (mOnline + mManual) + '</div><div style="font-size:11px;color:#64748b">Due: ৳' + (due.length * price) + ' (' + due.length + ' jon)</div></div>' +
+    '</div>' +
+    '<div style="font-size:13px;color:#e2e8f0;margin-bottom:6px">📈 Last 14 din er bikri</div>' +
+    '<div style="display:flex;align-items:flex-end;gap:2px;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:10px 6px 6px">' + bars + '</div>' +
+    '<div style="font-size:13px;color:#e2e8f0;margin:14px 0 4px">🗂️ Masher history</div>' + (monthRows || '<p style="color:#64748b;font-size:13px">Ekhono payment nai</p>') +
+    '<div style="font-size:13px;color:#e2e8f0;margin:14px 0 4px">🔴 Due List (meyad sesh, pay kore nai)</div>' + dueHtml;
+}
+</script>
+
 <!-- Analytics Dashboard (REST API - no SDK needed) -->
 <script>
 (function() {
