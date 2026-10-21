@@ -694,10 +694,11 @@ function renderUsers() {
       '<div style="font-size:16px;color:#fff"><b>1N1-' + u.display_id + '</b> ' +
       '<span style="color:#e2e8f0">' + (u.name || '<i style="color:#64748b">nam nai</i>') + '</span>' +
       ' <span style="float:right;color:' + st.c + ';font-size:13px;font-weight:bold">' + st.t + '</span></div>' +
-      '<div style="font-size:12px;color:#94a3b8;margin-top:4px">Meyad: ' + (u.plan === 'lifetime' ? '♾️' : fmtD(u.expiry)) + ' • Last seen: ' + fmtD(u.last_seen) + '</div>' +
+      '<div style="font-size:12px;color:#94a3b8;margin-top:4px">Meyad: ' + (u.plan === 'lifetime' ? '♾️' : fmtD(u.expiry)) + ' • Last seen: ' + fmtD(u.last_seen) + ((u.trial_days !== undefined && u.trial_days !== null) ? ' • 🆓 Custom trial: ' + u.trial_days + 'd' : '') + '</div>' +
       '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">' +
       '<button onclick="extendUser(\'' + k + '\')" style="background:#0ea5e9;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">💵 +30 din (Cash)</button>' +
       '<button onclick="lifetimeUser(\'' + k + '\')" style="background:#8b5cf6;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">⭐ Lifetime</button>' +
+      '<button onclick="trialUser(\'' + k + '\')" style="background:#f59e0b;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">🆓 Trial</button>' +
       '<button onclick="offUser(\'' + k + '\')" style="background:#ef4444;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">⛔ Off</button>' +
       '<button onclick="renameUser(\'' + k + '\')" style="background:#334155;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">✏️ Nam</button>' +
       '</div></div>';
@@ -723,6 +724,30 @@ async function lifetimeUser(k) {
   if (!confirm('1N1-' + u.display_id + ' ke LIFETIME diba?')) return;
   u.plan = 'lifetime';
   await fbPut('/users/' + k, u);
+  loadUsersPage();
+}
+async function trialUser(k) {
+  var u = usersCache[k]; if (!u) return;
+  if (u.plan === 'lifetime') { alert('⭐ Lifetime user — trial lagbe na!'); return; }
+  var cur = (u.trial_days !== undefined && u.trial_days !== null) ? u.trial_days : '';
+  var inp = prompt('1N1-' + u.display_id + ' er custom trial koto din?\n(0 = trial ekhoni sesh • khali rakhle = global setting)', cur);
+  if (inp === null) return;
+  var now = Date.now();
+  if (String(inp).trim() === '') {
+    var g = 3;
+    var bv = parseInt(document.getElementById('billTrial').value);
+    if (!isNaN(bv)) g = bv;
+    delete u.trial_days;
+    u.plan = 'trial'; u.trial_start = now; u.expiry = now + g * 86400000;
+    await fbPut('/users/' + k, u);
+    alert('✅ Global trial (' + g + ' din) chalu holo!');
+  } else {
+    var n = Math.max(0, parseInt(inp) || 0);
+    u.trial_days = n;
+    u.plan = 'trial'; u.trial_start = now; u.expiry = now + n * 86400000;
+    await fbPut('/users/' + k, u);
+    alert(n === 0 ? '⛔ Trial ekhoni sesh kore deya holo!' : '✅ ' + n + ' diner trial chalu holo!');
+  }
   loadUsersPage();
 }
 async function offUser(k) {
