@@ -37,5 +37,13 @@
     "smartlink_interval_minutes": 1,
     "smartlink_duration_seconds": 10,
     "rotation_interval_minutes": 1
+  },
+  "billing": {
+    "enabled": false,
+    "price": 100,
+    "trial_days": 3,
+    "free_channels": 5,
+    "bkash_number": "",
+    "bkash_qr_url": ""
   }
 }
