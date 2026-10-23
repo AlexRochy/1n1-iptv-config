@@ -42,7 +42,7 @@
     "enabled": true,
     "price": 100,
     "trial_days": 3,
-    "free_channels": 10,
+    "free_channels": 5,
     "bkash_number": "01777484827",
     "bkash_qr_url": ""
   }
