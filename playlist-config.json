@@ -40,9 +40,9 @@
   },
   "billing": {
     "enabled": true,
-    "price": 150,
+    "price": 100,
     "trial_days": 3,
-    "free_channels": 5,
+    "free_channels": 10,
     "bkash_number": "01777484827",
     "bkash_qr_url": ""
   }
