@@ -1,7 +1,7 @@
 {
-  "versionCode": 158,
-  "versionName": "1.3.28",
-  "apkUrl": "https://drive.google.com/uc?export=download&id=193l4eJLTCozrtDF08CXfd5Ocu0874mGD",
+  "versionCode": 159,
+  "versionName": "1.3.29",
+  "apkUrl": "https://drive.google.com/uc?export=download&id=1hrJjhT8L8GloKmHZ0Jic_DezCw5wKxTv",
   "forceUpdate": false,
-  "message": "Recharge top compact, Payment dialog notun design, toast kalo lekha"
+  "message": "Recharge title boro, badge soja, Payment dialog choto, gol loading spinner"
 }
