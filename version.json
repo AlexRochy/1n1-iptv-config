@@ -1,7 +1,7 @@
 {
-  "versionCode": 157,
-  "versionName": "1.3.27",
-  "apkUrl": "https://drive.google.com/uc?export=download&id=1uyjfjK-YBdZo6bXaZ7JLFJ_7u1n83zYU",
+  "versionCode": 158,
+  "versionName": "1.3.28",
+  "apkUrl": "https://drive.google.com/uc?export=download&id=193l4eJLTCozrtDF08CXfd5Ocu0874mGD",
   "forceUpdate": false,
-  "message": "Recharge screen: gap komano, choto X button, badge tilt, footer sorano, copy button dan kinare"
+  "message": "Recharge top compact, Payment dialog notun design, toast kalo lekha"
 }
