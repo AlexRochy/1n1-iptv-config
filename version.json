@@ -1,7 +1,7 @@
 {
-  "versionCode": 156,
-  "versionName": "1.3.26",
-  "apkUrl": "https://drive.google.com/uc?export=download&id=1cwrynHijNHOkixIf-QHRLfMiBp7pJclK",
+  "versionCode": 157,
+  "versionName": "1.3.27",
+  "apkUrl": "https://drive.google.com/uc?export=download&id=1uyjfjK-YBdZo6bXaZ7JLFJ_7u1n83zYU",
   "forceUpdate": false,
-  "message": "Recharge o Update dialog er icon ekhon hubuhu reference er moto, ar Refresh e 100+ default"
+  "message": "Recharge screen: gap komano, choto X button, badge tilt, footer sorano, copy button dan kinare"
 }
