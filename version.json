@@ -1,7 +1,7 @@
 {
-  "versionCode": 159,
-  "versionName": "1.3.29",
-  "apkUrl": "https://drive.google.com/uc?export=download&id=1hrJjhT8L8GloKmHZ0Jic_DezCw5wKxTv",
+  "versionCode": 160,
+  "versionName": "1.3.30",
+  "apkUrl": "https://drive.google.com/uc?export=download&id=1ZRFgl3O1swnIZ8PxWy02bZNbg0kG5uGV",
   "forceUpdate": false,
-  "message": "Recharge title boro, badge soja, Payment dialog choto, gol loading spinner"
+  "message": "Footer line, badge center, CTA box choto"
 }
