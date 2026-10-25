@@ -44,6 +44,7 @@
     "trial_days": 3,
     "free_channels": 5,
     "bkash_number": "01777484827",
-    "bkash_qr_url": ""
+    "bkash_qr_url": "",
+    "original_price": 200
   }
 }
