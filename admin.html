@@ -311,10 +311,12 @@ input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #475
     <label>bKash QR Image URL (optional)</label>
     <input type="text" id="billQr" placeholder="https://...qr.png">
     <div style="display:flex;gap:10px">
-      <div style="flex:1"><label>Price (৳/mas)</label><input type="text" id="billPrice" value="100"></div>
+      <div style="flex:1"><label>Price (৳/mas)</label><input type="text" id="billPrice" value="100" oninput="updateOfferHint()"></div>
+      <div style="flex:1"><label>Original Price (৳, optional)</label><input type="text" id="billOrigPrice" value="" placeholder="200" oninput="updateOfferHint()"></div>
       <div style="flex:1"><label>Free Trial (din)</label><input type="text" id="billTrial" value="3"></div>
       <div style="flex:1"><label>Free Channel (koyta)</label><input type="text" id="billFree" value="5"></div>
     </div>
+    <p id="offerHint" style="font-size:13px;color:#22c55e;margin:6px 0 0"></p>
     <p style="font-size:12px;color:#f59e0b;margin-top:8px">⚠️ Settings save korte nicher GitHub Config box theke Copy ba Save to GitHub koro.</p>
   </div>
   <div class="card">
@@ -424,6 +426,7 @@ async function loadConfig() {
       const b = cfg.billing;
       setVal('billNumber', b.bkash_number); setVal('billQr', b.bkash_qr_url);
       setVal('billPrice', b.price); setVal('billTrial', b.trial_days); setVal('billFree', b.free_channels);
+      setVal('billOrigPrice', b.original_price || ''); updateOfferHint();
       setToggle('billing', b.enabled);
     }
   } catch (e) { console.log('loadConfig failed', e); }
@@ -496,6 +499,17 @@ function copyVersion() {
     fallbackCopy(text);
   }
 }
+function updateOfferHint() {
+  var el = document.getElementById('offerHint'); if (!el) return;
+  var orig = parseInt(document.getElementById('billOrigPrice').value) || 0;
+  var price = parseInt(document.getElementById('billPrice').value) || 0;
+  if (orig > price && price > 0) {
+    var pct = Math.round((orig - price) / orig * 100);
+    el.textContent = '🎉 ' + pct + '% ছাড় — ৳' + orig + ' → ৳' + price;
+  } else {
+    el.textContent = orig > 0 && price > 0 ? 'ℹ️ Original price offer price theke boro hote hobe' : '';
+  }
+}
 function buildConfig() {
   const cfg = {
     main: { url: document.getElementById('mainUrl').value, enabled: state.main, name: "Main" },
@@ -533,6 +547,7 @@ function buildConfig() {
   cfg.billing = {
     enabled: state.billing || false,
     price: parseInt(document.getElementById('billPrice').value) || 100,
+    original_price: parseInt(document.getElementById('billOrigPrice').value) || 0,
     trial_days: (function(){var v=parseInt(document.getElementById('billTrial').value); return isNaN(v)?3:Math.max(0,v);})(),
     free_channels: (function(){var v=parseInt(document.getElementById('billFree').value); return isNaN(v)?5:Math.max(0,v);})(),
     bkash_number: document.getElementById('billNumber').value,
