@@ -594,6 +594,33 @@ document.getElementById('pwInput').addEventListener('keypress', e => { if (e.key
 <script>
 var FB = 'https://n1-iptv-default-rtdb.firebaseio.com';
 var usersCache = {}, requestsCache = {}, paymentsCache = {};
+// Firebase Auth (anonymous, REST — no SDK): ID token for RTDB ?auth=.
+// Falls back to unauthenticated calls if sign-in fails (rules are open until locked).
+var FB_API_KEY = 'AIzaSyBEUi9ug7pwwZjZMOZp8F7sd5x7XlItSfY';
+var fbAuthToken = null, fbAuthExpiry = 0;
+async function ensureFbAuth() {
+  if (fbAuthToken && Date.now() < fbAuthExpiry - 60000) return fbAuthToken;
+  try {
+    var refresh = localStorage.getItem('fb_refresh_token');
+    var token = null, newRefresh = null, expiresIn = 3600;
+    if (refresh) {
+      var rr = await fetch('https://securetoken.googleapis.com/v1/token?key=' + FB_API_KEY, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(refresh)});
+      if (rr.ok) { var j = await rr.json(); token = j.id_token || null; newRefresh = j.refresh_token || null; expiresIn = j.expires_in || 3600; }
+    }
+    if (!token) {
+      var sr = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + FB_API_KEY, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({returnSecureToken: true})});
+      if (sr.ok) { var k = await sr.json(); token = k.idToken || null; newRefresh = k.refreshToken || null; expiresIn = k.expiresIn || 3600; }
+    }
+    if (token) {
+      fbAuthToken = token; fbAuthExpiry = Date.now() + expiresIn * 1000;
+      if (newRefresh) localStorage.setItem('fb_refresh_token', newRefresh);
+      return token;
+    }
+  } catch (e) {}
+  return null;
+}
+async function fbAuthQs() { var t = await ensureFbAuth(); return t ? '?auth=' + t : ''; }
+
 
 function fmtD(ts) {
   if (!ts) return '—';
@@ -609,9 +636,9 @@ function uStatus(u) {
   }
   return {t: '🔒 Expired', c: '#f59e0b'};
 }
-async function fbGet(p) { try { const r = await fetch(FB + p + '.json'); return await r.json(); } catch (e) { return null; } }
-async function fbPut(p, o) { return fetch(FB + p + '.json', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(o)}); }
-async function fbPost(p, o) { try { const r = await fetch(FB + p + '.json', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(o)}); return await r.json(); } catch (e) { return null; } }
+async function fbGet(p) { try { const q = await fbAuthQs(); const r = await fetch(FB + p + '.json' + q); return await r.json(); } catch (e) { return null; } }
+async function fbPut(p, o) { const q = await fbAuthQs(); return fetch(FB + p + '.json' + q, {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(o)}); }
+async function fbPost(p, o) { try { const q = await fbAuthQs(); const r = await fetch(FB + p + '.json' + q, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(o)}); return await r.json(); } catch (e) { return null; } }
 
 async function loadUsersPage() {
   usersCache = (await fbGet('/users')) || {};
@@ -845,7 +872,8 @@ function renderReports() {
 (function() {
   var DB = 'https://n1-iptv-default-rtdb.firebaseio.com';
   function updateDashboard() {
-    fetch(DB + '/live_users.json').then(function(r){return r.json();}).then(function(data){
+    fbAuthQs().then(function(q){
+    fetch(DB + '/live_users.json' + q).then(function(r){return r.json();}).then(function(data){
       var now = Date.now(), live = 0;
       if (data) { for (var k in data) {
         if (data[k] && data[k].last_seen && (now - data[k].last_seen) < 6*60*1000) live++;
@@ -855,10 +883,11 @@ function renderReports() {
       var dot = document.getElementById('liveDot');
       if (dot) dot.style.color = live > 0 ? '#22c55e' : '#666';
     }).catch(function(e){});
-    fetch(DB + '/installs.json').then(function(r){return r.json();}).then(function(data){
+    fetch(DB + '/installs.json' + q).then(function(r){return r.json();}).then(function(data){
       var el = document.getElementById('totalDownloads');
       if (el) el.textContent = data ? Object.keys(data).length : 0;
     }).catch(function(e){});
+    });
   }
   updateDashboard();
   setInterval(updateDashboard, 30000);
